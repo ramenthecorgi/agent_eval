@@ -141,19 +141,20 @@ Steps:
 Always search Wikipedia before submitting.
 """.strip()
 
-    _MAX_TURNS = 4
-
     def evaluate(self, client: anthropic.Anthropic, query: str, agent_response: str) -> JudgeResult:
         tools = [_SEARCH_TOOL_DEF, _EVAL_TOOL]
         messages = [{"role": "user", "content": f"Query: {query}\n\nAgent response:\n{agent_response}"}]
+        searched = False
 
-        for _ in range(self._MAX_TURNS):
+        for _ in range(3):
+            # After one search, force submit on the next turn so the judge can't loop
+            tool_choice = {"type": "tool", "name": "submit_evaluation"} if searched else {"type": "any"}
             response = client.messages.create(
                 model=_JUDGE_MODEL,
                 max_tokens=2048,
                 system=self._SYSTEM,
                 tools=tools,
-                tool_choice={"type": "any"},
+                tool_choice=tool_choice,
                 messages=messages,
             )
 
@@ -170,6 +171,7 @@ Always search Wikipedia before submitting.
                 tool_results = []
                 for block in response.content:
                     if block.type == "tool_use" and block.name == "search_wikipedia":
+                        searched = True
                         try:
                             result = search_wikipedia(block.input["query"])
                         except Exception as e:
@@ -178,7 +180,7 @@ Always search Wikipedia before submitting.
                 if tool_results:
                     messages.append({"role": "user", "content": tool_results})
 
-        raise ValueError(f"Factual accuracy judge did not submit within {self._MAX_TURNS} turns")
+        raise ValueError("Factual accuracy judge did not submit after search")
 
 
 class HallucinationJudge:
