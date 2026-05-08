@@ -7,11 +7,28 @@ _MODEL = "claude-haiku-4-5-20251001"
 _MAX_TOKENS = 1024
 _TOOL_DEFINITION = {
     "name": "search_wikipedia",
-    "description": "Search Wikipedia for information about a topic and return a summary.",
+    "description": (
+        "Search Wikipedia for factual information. Use for questions about well-covered "
+        "entity types: people (historical figures, scientists, politicians, artists, athletes), "
+        "places (countries, cities, landmarks, geographic features), events (wars, revolutions, "
+        "discoveries, movements), concepts (scientific theories, mathematical ideas, philosophical "
+        "systems), works (films, books, albums, artworks), organizations (companies, institutions, "
+        "political parties, sports teams), species (animals, plants), and medical topics "
+        "(diseases, conditions, anatomy, treatments). "
+        "Do NOT use for real-time data, events from the past few weeks, private individuals, "
+        "or hyper-local topics. Returns the article title and a summary extract."
+    ),
     "input_schema": {
         "type": "object",
         "properties": {
-            "query": {"type": "string", "description": "The search term to look up on Wikipedia."}
+            "query": {
+                "type": "string",
+                "description": (
+                    "The entity to look up. Use the canonical name of the entity, not a question. "
+                    "Entity types: Person, Place, Event, Concept, Work, Organization, Species, "
+                    "Medical condition."
+                ),
+            }
         },
         "required": ["query"],
     },
@@ -34,28 +51,8 @@ and on your general knowledge when it does not.
 </role>
 
 <tool_use>
-You have access to search_wikipedia(query). Use it for factual questions that fall within
-Wikipedia's well-maintained domains:
-
-SEARCH WIKIPEDIA for questions about:
-- Science & technology: physics, chemistry, biology, computing, mathematics, astronomy
-- History: major world events, wars, political movements, ancient and modern civilizations
-- Geography: countries, capitals, major cities, mountains, rivers, oceans
-- Biographies: historical figures, heads of state, scientists, artists, Nobel laureates,
-  major public figures
-- Culture: widely-known films, books, music, art movements, major sports teams and athletes
-- Medicine: established diseases, conditions, treatments, anatomy
-- Philosophy, religion, mythology, major institutions and organizations
-
-DO NOT search Wikipedia for:
-- Real-time or very recent information (news from the past few weeks, stock prices,
-  sports scores, weather)
-- Hyper-local topics (small towns, local businesses, neighborhood events)
-- Private individuals not in public life
-- Niche topics unlikely to have a quality Wikipedia article
-- Questions you can answer accurately from general knowledge without a lookup
-
-When in doubt about coverage quality, prefer a search over no search.
+Use search_wikipedia when the question is about an entity covered by the tool. The tool
+description specifies exactly which entity types and topics qualify.
 </tool_use>
 
 <format>
