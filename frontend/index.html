@@ -88,7 +88,7 @@
 
     .run-summary { background: #f4f4f4; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
     .run-summary-top { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 16px; }
-    .judge-table { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .judge-table { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     .judge-cell { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; }
     .judge-cell-name { color: #666; font-size: 0.72rem; margin-bottom: 2px; }
     .judge-cell-stat { font-weight: 600; }
@@ -116,6 +116,15 @@
 
     .agent-response-toggle { font-size: 0.75rem; color: #1a73e8; cursor: pointer; margin-bottom: 8px; display: inline-block; }
     .agent-response-box { background: #f4f4f4; border-radius: 6px; padding: 12px; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; margin-bottom: 12px; display: none; }
+
+    .group-section { margin-bottom: 24px; }
+    .group-header { display: flex; align-items: center; gap: 10px; padding: 8px 0; margin-bottom: 8px; border-bottom: 2px solid #e0e0e0; }
+    .group-name { font-size: 0.85rem; font-weight: 700; color: #333; text-transform: uppercase; letter-spacing: 0.04em; }
+    .group-stat { font-size: 0.8rem; color: #666; }
+    .safety-section .group-header { border-bottom-color: #e65100; }
+    .safety-section .group-name { color: #e65100; }
+    .safety-section .case-card.verdict-pass { border-left-color: #e65100; }
+    .judge-cell-sub { font-size: 0.68rem; color: #aaa; margin-top: 1px; }
   </style>
 </head>
 <body>
@@ -315,11 +324,20 @@
 
     // ── Evals ─────────────────────────────────────────────────────
     const JUDGE_LABELS = {
-      tool_routing: 'Tool Routing',
+      tool_routing:     'Tool Routing',
       factual_accuracy: 'Factual Accuracy',
-      hallucination: 'Hallucination',
-      format: 'Format',
-      guardrail: 'Guardrail',
+      hallucination:    'Hallucination',
+      format:           'Format',
+      refusal:          'Refusal',
+      guardrail:        'Guardrail',
+    };
+
+    const GROUP_LABELS = {
+      knowledge:   'Knowledge',
+      tool_use:    'Tool Use',
+      out_of_scope:'Out of Scope',
+      adversarial: 'Safety',
+      guardrail:   'Guardrail',
     };
 
     async function loadEvalRuns() {
@@ -347,7 +365,6 @@
       document.querySelectorAll('.run-item').forEach(el => el.classList.remove('active'));
       const el = document.querySelector(`.run-item[data-id="${runId}"]`);
       if (el) el.classList.add('active');
-
       const res = await fetch(`/api/evals/${runId}`);
       if (!res.ok) { alert('Eval run not found'); return; }
       renderEvalRun(await res.json());
@@ -359,15 +376,37 @@
 
       const judgeRows = Object.entries(JUDGE_LABELS).map(([key, label]) => {
         const j = s.by_judge[key];
-        const pct = Math.round(j.passed / s.total * 100);
+        if (!j) return '';
+        const pct = j.total > 0 ? Math.round(j.passed / j.total * 100) : 0;
+        const isSafety = key === 'refusal';
         return `
-          <div class="judge-cell">
-            <div class="judge-cell-name">${label}</div>
-            <div class="judge-cell-stat">${j.passed}/${s.total} <span style="color:#888;font-weight:400;">(${pct}%)</span></div>
+          <div class="judge-cell" ${isSafety ? 'style="border-color:#e65100;"' : ''}>
+            <div class="judge-cell-name" ${isSafety ? 'style="color:#e65100;"' : ''}>${label}</div>
+            <div class="judge-cell-stat">${j.passed}/${j.total} <span style="color:#888;font-weight:400;">(${pct}%)</span></div>
+            <div class="judge-cell-sub">${j.total} applicable</div>
           </div>`;
       }).join('');
 
-      const caseCards = run.cases.map((c, idx) => renderCaseCard(c, idx)).join('');
+      // Group cases by group, render in order
+      const groups = ['knowledge', 'tool_use', 'out_of_scope', 'adversarial', 'guardrail'];
+      let caseIdx = 0;
+      const groupSections = groups.map(groupName => {
+        const cases = run.cases.filter(c => c.group === groupName);
+        if (!cases.length) return '';
+        const bg = s.by_group?.[groupName];
+        const groupPassed = bg ? bg.passed : cases.filter(c => c.verdict === 'pass').length;
+        const isSafety = groupName === 'adversarial';
+        const label = GROUP_LABELS[groupName] || groupName;
+        const cards = cases.map(c => renderCaseCard(c, caseIdx++)).join('');
+        return `
+          <div class="group-section ${isSafety ? 'safety-section' : ''}">
+            <div class="group-header">
+              <span class="group-name">${label}</span>
+              <span class="group-stat">${groupPassed}/${cases.length} passed</span>
+            </div>
+            ${cards}
+          </div>`;
+      }).join('');
 
       document.getElementById('evals-view').innerHTML = `
         <div class="run-summary">
@@ -380,7 +419,7 @@
           </div>
           <div class="judge-table">${judgeRows}</div>
         </div>
-        ${caseCards}
+        ${groupSections}
       `;
     }
 
@@ -394,9 +433,9 @@
       const failureHint = failedJudges ? `<span class="case-failures">${failedJudges} ✗</span>` : '';
       const queryShort = c.query.length > 70 ? c.query.slice(0, 70) + '…' : c.query;
 
-      const judgeSections = Object.entries(JUDGE_LABELS).map(([key, label]) => {
-        const j = c.judges[key];
-        if (!j) return '';
+      // Only render judges present in this case's data
+      const judgeSections = Object.entries(c.judges).map(([key, j]) => {
+        const label = JUDGE_LABELS[key] || key;
         const jBadge = `<span class="badge ${j.verdict === 'pass' ? 'badge-pass' : 'badge-fail'}">${j.verdict.toUpperCase()}</span>`;
         const rubrics = j.rubrics.map(r => `
           <div class="rubric-row">
