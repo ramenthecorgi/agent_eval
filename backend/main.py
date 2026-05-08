@@ -18,6 +18,7 @@ from tracer import Tracer
 load_dotenv()
 
 TRACES_DIR = Path(__file__).parent / "traces"
+EVALS_DIR = Path(__file__).parent.parent / "evals"
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
 app = FastAPI()
@@ -105,6 +106,30 @@ async def get_trace(session_id: str):
     path = TRACES_DIR / f"{session_id}.json"
     if not path.exists():
         raise HTTPException(status_code=404, detail="Session not found")
+    return json.loads(path.read_text())
+
+
+@app.get("/api/evals")
+async def list_evals():
+    runs = []
+    for path in sorted(EVALS_DIR.glob("eval_run_*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
+        data = json.loads(path.read_text())
+        runs.append({
+            "run_id": data["run_id"],
+            "ran_at": data["ran_at"],
+            "total": data["summary"]["total"],
+            "passed": data["summary"]["passed"],
+            "failed": data["summary"]["failed"],
+            "by_judge": data["summary"]["by_judge"],
+        })
+    return runs
+
+
+@app.get("/api/evals/{run_id}")
+async def get_eval(run_id: str):
+    path = EVALS_DIR / f"eval_run_{run_id}.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Eval run not found")
     return json.loads(path.read_text())
 
 

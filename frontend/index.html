@@ -34,7 +34,7 @@
     #traces-panel { flex-direction: row; overflow: hidden; }
     #sidebar { width: 280px; min-width: 200px; border-right: 1px solid #ddd; overflow-y: auto; background: #fafafa; flex-shrink: 0; }
     #sidebar h2 { padding: 16px; font-size: 0.9rem; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-    #refresh-btn { font-size: 0.75rem; background: none; border: 1px solid #ccc; border-radius: 4px; padding: 2px 8px; color: #555; cursor: pointer; }
+    #refresh-btn, .refresh-btn { font-size: 0.75rem; background: none; border: 1px solid #ccc; border-radius: 4px; padding: 2px 8px; color: #555; cursor: pointer; }
     .session-item { padding: 12px 16px; border-bottom: 1px solid #eee; cursor: pointer; }
     .session-item:hover { background: #f0f0f0; }
     .session-item.active { background: #e8f0fe; }
@@ -70,13 +70,60 @@
     .color-final   { background: #f5f5f5; border-color: #9e9e9e; }
 
     #trace-empty { color: #999; font-size: 0.9rem; padding: 60px; text-align: center; }
+
+    /* Evals panel */
+    #evals-panel { flex-direction: row; overflow: hidden; }
+    #evals-sidebar { width: 280px; min-width: 200px; border-right: 1px solid #ddd; overflow-y: auto; background: #fafafa; flex-shrink: 0; }
+    #evals-sidebar h2 { padding: 16px; font-size: 0.9rem; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+    .run-item { padding: 12px 16px; border-bottom: 1px solid #eee; cursor: pointer; }
+    .run-item:hover { background: #f0f0f0; }
+    .run-item.active { background: #e8f0fe; }
+    .run-id { font-size: 0.8rem; color: #555; font-family: monospace; }
+    .run-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .badge-pass { background: #d4edda; color: #155724; }
+    .badge-fail { background: #fdecea; color: #721c24; }
+
+    #evals-main { flex: 1; overflow-y: auto; padding: 24px; }
+    #evals-empty { color: #999; font-size: 0.9rem; padding: 60px; text-align: center; }
+
+    .run-summary { background: #f4f4f4; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+    .run-summary-top { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 16px; }
+    .judge-table { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .judge-cell { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; }
+    .judge-cell-name { color: #666; font-size: 0.72rem; margin-bottom: 2px; }
+    .judge-cell-stat { font-weight: 600; }
+
+    .case-card { border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+    .case-card.verdict-pass { border-left: 3px solid #28a745; }
+    .case-card.verdict-fail { border-left: 3px solid #dc3545; }
+    .case-header { padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; background: #fafafa; }
+    .case-header:hover { background: #f0f0f0; }
+    .case-id { font-size: 0.78rem; font-family: monospace; color: #555; flex-shrink: 0; }
+    .case-query { font-size: 0.85rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .case-failures { font-size: 0.72rem; color: #dc3545; flex-shrink: 0; }
+    .case-body { display: none; padding: 12px 14px; border-top: 1px solid #eee; }
+    .case-body.open { display: block; }
+
+    .judge-section { margin-bottom: 12px; }
+    .judge-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.82rem; font-weight: 600; }
+    .rubric-row { display: flex; align-items: flex-start; gap: 8px; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+    .rubric-row:last-child { border-bottom: none; }
+    .rubric-name { font-family: monospace; font-size: 0.75rem; color: #555; flex-shrink: 0; width: 180px; }
+    .rubric-chip { font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; }
+    .chip-pass { background: #d4edda; color: #155724; }
+    .chip-fail { background: #fdecea; color: #721c24; }
+    .rubric-reason { color: #555; flex: 1; }
+
+    .agent-response-toggle { font-size: 0.75rem; color: #1a73e8; cursor: pointer; margin-bottom: 8px; display: inline-block; }
+    .agent-response-box { background: #f4f4f4; border-radius: 6px; padding: 12px; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; margin-bottom: 12px; display: none; }
   </style>
 </head>
 <body>
 
   <div id="tab-bar">
-    <div class="tab active" onclick="switchTab('chat')">Chat</div>
-    <div class="tab" onclick="switchTab('traces')">Traces</div>
+    <div class="tab active" data-tab="chat" onclick="switchTab('chat')">Chat</div>
+    <div class="tab" data-tab="traces" onclick="switchTab('traces')">Traces</div>
+    <div class="tab" data-tab="evals" onclick="switchTab('evals')">Evals</div>
   </div>
 
   <!-- Chat Panel -->
@@ -88,6 +135,17 @@
     </form>
     <div id="status"></div>
     <div id="result" style="display:none;"></div>
+  </div>
+
+  <!-- Evals Panel -->
+  <div id="evals-panel" class="panel">
+    <div id="evals-sidebar">
+      <h2>Eval Runs <button id="evals-refresh-btn" class="refresh-btn" onclick="loadEvalRuns()">↻ Refresh</button></h2>
+      <div id="run-list"><p style="padding:16px;font-size:0.85rem;color:#888;">Loading…</p></div>
+    </div>
+    <div id="evals-main">
+      <div id="evals-view"><p id="evals-empty">Select an eval run to view results.</p></div>
+    </div>
   </div>
 
   <!-- Traces Panel -->
@@ -104,13 +162,12 @@
   <script>
     // ── Tab switching ──────────────────────────────────────────────
     function switchTab(name) {
-      document.querySelectorAll('.tab').forEach((t, i) => {
-        const tabName = i === 0 ? 'chat' : 'traces';
-        t.classList.toggle('active', tabName === name);
-      });
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
       document.getElementById('chat-panel').classList.toggle('active', name === 'chat');
       document.getElementById('traces-panel').classList.toggle('active', name === 'traces');
+      document.getElementById('evals-panel').classList.toggle('active', name === 'evals');
       if (name === 'traces') loadSessions();
+      if (name === 'evals') loadEvalRuns();
     }
 
     // ── Chat ──────────────────────────────────────────────────────
@@ -254,6 +311,136 @@
 
     function escapeHtml(str) {
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ── Evals ─────────────────────────────────────────────────────
+    const JUDGE_LABELS = {
+      tool_routing: 'Tool Routing',
+      factual_accuracy: 'Factual Accuracy',
+      hallucination: 'Hallucination',
+      format: 'Format',
+      guardrail: 'Guardrail',
+    };
+
+    async function loadEvalRuns() {
+      const res = await fetch('/api/evals');
+      const runs = await res.json();
+      const list = document.getElementById('run-list');
+      if (!runs.length) {
+        list.innerHTML = '<p style="padding:16px;font-size:0.85rem;color:#888;">No eval runs yet.</p>';
+        return;
+      }
+      list.innerHTML = runs.map(r => {
+        const rate = Math.round(r.passed / r.total * 100);
+        const badgeCls = r.failed === 0 ? 'badge-pass' : 'badge-fail';
+        return `
+          <div class="run-item" data-id="${r.run_id}" onclick="loadEvalRun('${r.run_id}')">
+            <div class="run-id">${r.run_id}
+              <span class="badge ${badgeCls}">${rate}%</span>
+            </div>
+            <div class="run-meta">${new Date(r.ran_at).toLocaleString()} &bull; ${r.passed}/${r.total} passed</div>
+          </div>`;
+      }).join('');
+    }
+
+    async function loadEvalRun(runId) {
+      document.querySelectorAll('.run-item').forEach(el => el.classList.remove('active'));
+      const el = document.querySelector(`.run-item[data-id="${runId}"]`);
+      if (el) el.classList.add('active');
+
+      const res = await fetch(`/api/evals/${runId}`);
+      if (!res.ok) { alert('Eval run not found'); return; }
+      renderEvalRun(await res.json());
+    }
+
+    function renderEvalRun(run) {
+      const s = run.summary;
+      const rate = Math.round(s.passed / s.total * 100);
+
+      const judgeRows = Object.entries(JUDGE_LABELS).map(([key, label]) => {
+        const j = s.by_judge[key];
+        const pct = Math.round(j.passed / s.total * 100);
+        return `
+          <div class="judge-cell">
+            <div class="judge-cell-name">${label}</div>
+            <div class="judge-cell-stat">${j.passed}/${s.total} <span style="color:#888;font-weight:400;">(${pct}%)</span></div>
+          </div>`;
+      }).join('');
+
+      const caseCards = run.cases.map((c, idx) => renderCaseCard(c, idx)).join('');
+
+      document.getElementById('evals-view').innerHTML = `
+        <div class="run-summary">
+          <div class="run-summary-top">
+            <div class="summary-item"><div class="summary-label">Run</div><div class="summary-value" style="font-family:monospace;font-size:0.85rem;">${run.run_id}</div></div>
+            <div class="summary-item"><div class="summary-label">Total</div><div class="summary-value">${s.total}</div></div>
+            <div class="summary-item"><div class="summary-label">Passed</div><div class="summary-value" style="color:#155724;">${s.passed}</div></div>
+            <div class="summary-item"><div class="summary-label">Failed</div><div class="summary-value" style="color:#721c24;">${s.failed}</div></div>
+            <div class="summary-item"><div class="summary-label">Pass rate</div><div class="summary-value">${rate}%</div></div>
+          </div>
+          <div class="judge-table">${judgeRows}</div>
+        </div>
+        ${caseCards}
+      `;
+    }
+
+    function renderCaseCard(c, idx) {
+      const verdictCls = c.verdict === 'pass' ? 'verdict-pass' : 'verdict-fail';
+      const badge = `<span class="badge ${c.verdict === 'pass' ? 'badge-pass' : 'badge-fail'}">${c.verdict.toUpperCase()}</span>`;
+      const failedJudges = Object.entries(c.judges)
+        .filter(([, j]) => j.verdict === 'fail')
+        .map(([name]) => JUDGE_LABELS[name] || name)
+        .join(', ');
+      const failureHint = failedJudges ? `<span class="case-failures">${failedJudges} ✗</span>` : '';
+      const queryShort = c.query.length > 70 ? c.query.slice(0, 70) + '…' : c.query;
+
+      const judgeSections = Object.entries(JUDGE_LABELS).map(([key, label]) => {
+        const j = c.judges[key];
+        if (!j) return '';
+        const jBadge = `<span class="badge ${j.verdict === 'pass' ? 'badge-pass' : 'badge-fail'}">${j.verdict.toUpperCase()}</span>`;
+        const rubrics = j.rubrics.map(r => `
+          <div class="rubric-row">
+            <span class="rubric-name">${r.name}</span>
+            <span class="rubric-chip ${r.passed ? 'chip-pass' : 'chip-fail'}">${r.passed ? 'PASS' : 'FAIL'}</span>
+            <span class="rubric-reason">${escapeHtml(r.reason)}</span>
+          </div>`).join('');
+        return `
+          <div class="judge-section">
+            <div class="judge-section-header">${label} ${jBadge}</div>
+            ${rubrics}
+          </div>`;
+      }).join('');
+
+      const hasResponse = c.agent_response && c.agent_response.length > 0;
+      const responseBlock = hasResponse ? `
+        <span class="agent-response-toggle" onclick="toggleAgentResponse(${idx})">▶ agent response</span>
+        <div class="agent-response-box" id="ar-${idx}">${escapeHtml(c.agent_response)}</div>` : '';
+
+      return `
+        <div class="case-card ${verdictCls}">
+          <div class="case-header" onclick="toggleCase(${idx})">
+            <span class="case-id">${c.id}</span>
+            <span class="case-query">${escapeHtml(queryShort)}</span>
+            ${failureHint}
+            ${badge}
+          </div>
+          <div class="case-body" id="case-${idx}">
+            ${responseBlock}
+            ${judgeSections}
+          </div>
+        </div>`;
+    }
+
+    function toggleCase(idx) {
+      document.getElementById(`case-${idx}`).classList.toggle('open');
+    }
+
+    function toggleAgentResponse(idx) {
+      const box = document.getElementById(`ar-${idx}`);
+      const toggle = box.previousElementSibling;
+      const open = box.style.display !== 'block';
+      box.style.display = open ? 'block' : 'none';
+      toggle.textContent = open ? '▼ agent response' : '▶ agent response';
     }
   </script>
 </body>
