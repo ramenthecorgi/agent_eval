@@ -48,4 +48,11 @@ class RuleBasedGuardrail:
         return self._evaluate(text)
 
     def check_response(self, text: str) -> GuardrailResult:
-        return self._evaluate(text)
+        text_lower = text.lower()
+        keywords_ok = not any(kw in text_lower for kw in self.blocked_keywords)
+        rules = [{"rule": "blocked_keywords", "passed": keywords_ok}]
+        return GuardrailResult(
+            passed=keywords_ok,
+            reason="blocked_keywords" if not keywords_ok else None,
+            rules_evaluated=rules,
+        )
