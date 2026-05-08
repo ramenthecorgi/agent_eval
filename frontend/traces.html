@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trace Viewer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; display: flex; height: 100vh; color: #111; }
+
+    #sidebar { width: 280px; min-width: 220px; border-right: 1px solid #ddd; overflow-y: auto; background: #fafafa; }
+    #sidebar h2 { padding: 16px; font-size: 0.95rem; border-bottom: 1px solid #ddd; }
+    .session-item { padding: 12px 16px; border-bottom: 1px solid #eee; cursor: pointer; }
+    .session-item:hover { background: #f0f0f0; }
+    .session-item.active { background: #e8f0fe; }
+    .session-id { font-size: 0.8rem; color: #555; font-family: monospace; }
+    .session-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .badge { display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; margin-left: 6px; }
+    .badge-success { background: #d4edda; color: #155724; }
+    .badge-blocked { background: #fff3cd; color: #856404; }
+    .badge-error { background: #fdecea; color: #721c24; }
+
+    #main { flex: 1; overflow-y: auto; padding: 24px; }
+    #summary { background: #f4f4f4; border-radius: 8px; padding: 16px; margin-bottom: 24px; display: flex; gap: 24px; flex-wrap: wrap; }
+    .summary-item { font-size: 0.85rem; }
+    .summary-label { color: #666; }
+    .summary-value { font-weight: 600; }
+
+    .event-card { border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .event-header { padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .event-header:hover { filter: brightness(0.97); }
+    .event-name { font-weight: 600; font-size: 0.9rem; }
+    .event-turn { font-size: 0.75rem; color: #666; }
+    .event-ts { font-size: 0.75rem; color: #999; margin-left: auto; }
+    .duration-badge { font-size: 0.72rem; padding: 1px 7px; border-radius: 10px; background: rgba(0,0,0,0.08); }
+    .event-body { padding: 0 14px 12px; display: none; }
+    .event-body.open { display: block; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.78rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+    .toggle-raw { font-size: 0.75rem; color: #1a73e8; cursor: pointer; margin-top: 8px; display: inline-block; }
+
+    .color-safety { background: #fffde7; border-color: #f9a825; }
+    .color-llm { background: #e3f2fd; border-color: #1565c0; }
+    .color-tool { background: #e8f5e9; border-color: #2e7d32; }
+    .color-error { background: #fdecea; border-color: #c62828; }
+    .color-final { background: #f5f5f5; border-color: #9e9e9e; }
+
+    #empty { color: #999; font-size: 0.9rem; padding: 40px; text-align: center; }
+    #back-link { font-size: 0.85rem; color: #1a73e8; text-decoration: none; display: inline-block; margin-bottom: 16px; }
+    #back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h2>Sessions</h2>
+    <div id="session-list"><p style="padding:16px;font-size:0.85rem;color:#888;">Loading…</p></div>
+  </div>
+  <div id="main">
+    <a href="/" id="back-link">← Back to chat</a>
+    <div id="trace-view"><p id="empty">Select a session to view its trace.</p></div>
+  </div>
+
+  <script>
+    const EVENT_COLORS = {
+      request_safety_check: 'color-safety',
+      response_safety_check: 'color-safety',
+      llm_request: 'color-llm',
+      llm_response: 'color-llm',
+      tool_call: 'color-tool',
+      tool_result: 'color-tool',
+      error: 'color-error',
+      final_answer: 'color-final',
+    };
+
+    async function loadSessions() {
+      const res = await fetch('/api/traces');
+      const sessions = await res.json();
+      const list = document.getElementById('session-list');
+      if (!sessions.length) {
+        list.innerHTML = '<p style="padding:16px;font-size:0.85rem;color:#888;">No sessions yet.</p>';
+        return;
+      }
+      list.innerHTML = sessions.map(s => `
+        <div class="session-item" data-id="${s.session_id}" onclick="loadSession('${s.session_id}')">
+          <div class="session-id">${s.session_id.slice(0, 16)}…
+            <span class="badge badge-${s.status}">${s.status}</span>
+          </div>
+          <div class="session-meta">
+            ${new Date(s.started_at).toLocaleString()} &bull;
+            ${s.total_duration_ms != null ? s.total_duration_ms + 'ms' : '—'} &bull;
+            ${s.total_usage ? (s.total_usage.input_tokens + s.total_usage.output_tokens) + ' tok' : '—'}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadSession(sessionId) {
+      document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.querySelector(`.session-item[data-id="${sessionId}"]`);
+      if (activeEl) activeEl.classList.add('active');
+
+      const res = await fetch(`/api/traces/${sessionId}`);
+      if (!res.ok) { alert('Session not found'); return; }
+      const session = await res.json();
+      renderSession(session);
+      history.replaceState(null, '', `?session=${sessionId}`);
+    }
+
+    function renderSession(session) {
+      const turns = new Set(session.events.filter(e => e.turn).map(e => e.turn)).size;
+      const view = document.getElementById('trace-view');
+      view.innerHTML = `
+        <div id="summary">
+          <div class="summary-item"><div class="summary-label">Status</div><div class="summary-value">${session.status}</div></div>
+          <div class="summary-item"><div class="summary-label">Duration</div><div class="summary-value">${session.total_duration_ms ?? '—'}ms</div></div>
+          <div class="summary-item"><div class="summary-label">Turns</div><div class="summary-value">${turns}</div></div>
+          <div class="summary-item"><div class="summary-label">Input tokens</div><div class="summary-value">${session.total_usage?.input_tokens ?? '—'}</div></div>
+          <div class="summary-item"><div class="summary-label">Output tokens</div><div class="summary-value">${session.total_usage?.output_tokens ?? '—'}</div></div>
+        </div>
+        <div><strong>Query:</strong> ${escapeHtml(session.user_query)}</div>
+        <br>
+        ${session.events.map((ev, i) => renderEvent(ev, i)).join('')}
+      `;
+    }
+
+    function renderEvent(ev, idx) {
+      const color = EVENT_COLORS[ev.event] || 'color-final';
+      const turn = ev.turn ? `<span class="event-turn">turn ${ev.turn}</span>` : '';
+      const dur = ev.duration_ms != null ? `<span class="duration-badge">${ev.duration_ms}ms</span>` : '';
+      const ts = ev.timestamp ? `<span class="event-ts">${new Date(ev.timestamp).toLocaleTimeString()}</span>` : '';
+      return `
+        <div class="event-card ${color}">
+          <div class="event-header" onclick="toggleEvent(${idx})">
+            <span class="event-name">${ev.event}</span>${turn}${dur}${ts}
+          </div>
+          <div class="event-body" id="ev-${idx}">
+            <span class="toggle-raw" onclick="toggleRaw(${idx})">▶ raw JSON</span>
+            <pre id="raw-${idx}" style="display:none;">${escapeHtml(JSON.stringify(ev, null, 2))}</pre>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleEvent(idx) {
+      document.getElementById(`ev-${idx}`).classList.toggle('open');
+    }
+
+    function toggleRaw(idx) {
+      const raw = document.getElementById(`raw-${idx}`);
+      const toggler = raw.previousElementSibling;
+      const open = raw.style.display === 'none';
+      raw.style.display = open ? 'block' : 'none';
+      toggler.textContent = open ? '▼ raw JSON' : '▶ raw JSON';
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    loadSessions().then(() => {
+      const sessionId = new URLSearchParams(location.search).get('session');
+      if (sessionId) loadSession(sessionId);
+    });
+  </script>
+</body>
+</html>

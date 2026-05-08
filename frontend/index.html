@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wikipedia Agent</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #111; }
+    h1 { font-size: 1.4rem; margin-bottom: 24px; }
+    #form { display: flex; gap: 8px; }
+    #query { flex: 1; padding: 10px 12px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; }
+    button { padding: 10px 18px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+    button:disabled { background: #aaa; cursor: default; }
+    #result { margin-top: 24px; }
+    #answer { background: #f4f4f4; border-radius: 6px; padding: 16px; white-space: pre-wrap; line-height: 1.6; }
+    #trace-link { display: inline-block; margin-top: 12px; color: #1a73e8; text-decoration: none; font-size: 0.9rem; }
+    #trace-link:hover { text-decoration: underline; }
+    #error { background: #fdecea; border: 1px solid #f5c6cb; border-radius: 6px; padding: 16px; color: #721c24; }
+    #status { margin-top: 8px; font-size: 0.85rem; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Wikipedia Agent</h1>
+  <form id="form">
+    <input id="query" type="text" placeholder="Ask a question…" autocomplete="off" required />
+    <button id="submit-btn" type="submit">Ask</button>
+  </form>
+  <div id="status"></div>
+  <div id="result" style="display:none;"></div>
+
+  <script>
+    const form = document.getElementById('form');
+    const queryInput = document.getElementById('query');
+    const submitBtn = document.getElementById('submit-btn');
+    const statusEl = document.getElementById('status');
+    const resultEl = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      submitBtn.disabled = true;
+      statusEl.textContent = 'Thinking…';
+      resultEl.style.display = 'none';
+      resultEl.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+
+        resultEl.style.display = 'block';
+        statusEl.textContent = '';
+
+        if (data.status === 'success') {
+          resultEl.innerHTML = `
+            <div id="answer">${escapeHtml(data.answer)}</div>
+            <a id="trace-link" href="traces.html?session=${data.session_id}">View trace →</a>
+          `;
+        } else if (data.status === 'blocked') {
+          resultEl.innerHTML = `<div id="error">Request blocked (${escapeHtml(data.blocked_at)}): ${escapeHtml(data.reason)}</div>`;
+        } else {
+          resultEl.innerHTML = `<div id="error">An error occurred. Check the server logs.</div>`;
+        }
+      } catch (err) {
+        statusEl.textContent = '';
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = `<div id="error">Network error: ${escapeHtml(String(err))}</div>`;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
