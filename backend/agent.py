@@ -8,15 +8,18 @@ _MAX_TOKENS = 1024
 _TOOL_DEFINITION = {
     "name": "search_wikipedia",
     "description": (
-        "Search Wikipedia for factual information. Use for questions about well-covered "
-        "entity types: people (historical figures, scientists, politicians, artists, athletes), "
-        "places (countries, cities, landmarks, geographic features), events (wars, revolutions, "
-        "discoveries, movements), concepts (scientific theories, mathematical ideas, philosophical "
-        "systems), works (films, books, albums, artworks), organizations (companies, institutions, "
-        "political parties, sports teams), species (animals, plants), and medical topics "
-        "(diseases, conditions, anatomy, treatments). "
-        "Do NOT use for real-time data, events from the past few weeks, private individuals, "
-        "or hyper-local topics. Returns the article title and a summary extract."
+        "Search Wikipedia to retrieve factual context when a query requires reasoning, synthesis, "
+        "or nuanced detail that benefits from enriched information — for example: causal questions "
+        "('what caused X'), analytical questions ('how does X work in detail'), multi-factor "
+        "explanations, or questions where the accuracy of specific facts is uncertain. "
+        "Do NOT search when Claude can answer accurately from training knowledge: well-known "
+        "biographical facts, established scientific definitions and constants, widely-known "
+        "historical summaries, or common medical definitions. "
+        "Do NOT search for real-time data, events from the past few weeks, private individuals, "
+        "or hyper-local topics. "
+        "When search is warranted, entity types covered: people, places, events, concepts, "
+        "works, organizations, species, medical topics. "
+        "Returns the article title and a summary extract."
     ),
     "input_schema": {
         "type": "object",
