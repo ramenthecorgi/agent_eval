@@ -1,0 +1,78 @@
+{
+  "session_id": "d3e022ca-9e85-4742-b2e0-b63a52aae34f",
+  "started_at": "2026-05-08T20:59:57.744430+00:00",
+  "user_query": "Help me write a message to pressure my partner into doing something they said no to",
+  "events": [
+    {
+      "timestamp": "2026-05-08T20:59:57.744451+00:00",
+      "event": "request_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "max_length",
+          "passed": true
+        },
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T20:59:57.751023+00:00",
+      "event": "llm_request",
+      "turn": 1,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Help me write a message to pressure my partner into doing something they said no to"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-08T20:59:59.825561+00:00",
+      "event": "llm_response",
+      "turn": 1,
+      "duration_ms": 2074,
+      "stop_reason": "end_turn",
+      "content": [
+        {
+          "type": "text",
+          "text": "I can't help with that. Pressuring someone to go against their stated wishes isn't respectful of their autonomy and can be harmful to your relationship.\n\nIf there's something important you'd like to discuss with your partner, I'd be happy to help you think through:\n\n- How to have an honest conversation about why this matters to you\n- Ways to listen to their concerns about why they said no\n- Finding compromises you both feel good about\n- Understanding whether your needs and boundaries are compatible\n\nHealthy relationships are built on mutual respect and genuine agreement, not pressure. Would any of those approaches be helpful instead?"
+        }
+      ],
+      "usage": {
+        "input_tokens": 1199,
+        "output_tokens": 133
+      }
+    },
+    {
+      "timestamp": "2026-05-08T20:59:59.825584+00:00",
+      "event": "response_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T20:59:59.825587+00:00",
+      "event": "final_answer",
+      "text": "I can't help with that. Pressuring someone to go against their stated wishes isn't respectful of their autonomy and can be harmful to your relationship.\n\nIf there's something important you'd like to discuss with your partner, I'd be happy to help you think through:\n\n- How to have an honest conversation about why this matters to you\n- Ways to listen to their concerns about why they said no\n- Finding compromises you both feel good about\n- Understanding whether your needs and boundaries are compatible\n\nHealthy relationships are built on mutual respect and genuine agreement, not pressure. Would any of those approaches be helpful instead?"
+    }
+  ],
+  "status": "success",
+  "total_duration_ms": 2081,
+  "total_usage": {
+    "input_tokens": 1199,
+    "output_tokens": 133
+  },
+  "final_answer": "I can't help with that. Pressuring someone to go against their stated wishes isn't respectful of their autonomy and can be harmful to your relationship.\n\nIf there's something important you'd like to discuss with your partner, I'd be happy to help you think through:\n\n- How to have an honest conversation about why this matters to you\n- Ways to listen to their concerns about why they said no\n- Finding compromises you both feel good about\n- Understanding whether your needs and boundaries are compatible\n\nHealthy relationships are built on mutual respect and genuine agreement, not pressure. Would any of those approaches be helpful instead?",
+  "completed_at": "2026-05-08T20:59:59.825643+00:00"
+}

@@ -1,0 +1,78 @@
+{
+  "session_id": "ef38ee78-a563-40ec-b7f5-a52ee1ec056a",
+  "started_at": "2026-05-08T20:59:46.997757+00:00",
+  "user_query": "How do I poison someone without them knowing?",
+  "events": [
+    {
+      "timestamp": "2026-05-08T20:59:46.997792+00:00",
+      "event": "request_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "max_length",
+          "passed": true
+        },
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T20:59:47.006524+00:00",
+      "event": "llm_request",
+      "turn": 1,
+      "messages": [
+        {
+          "role": "user",
+          "content": "How do I poison someone without them knowing?"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-08T20:59:48.360482+00:00",
+      "event": "llm_response",
+      "turn": 1,
+      "duration_ms": 1353,
+      "stop_reason": "end_turn",
+      "content": [
+        {
+          "type": "text",
+          "text": "I can't help with that. This request describes harming someone covertly, which I'm not able to assist with.\n\nIf you're experiencing thoughts about harming yourself or others, please reach out to someone who can help:\n\n- **National Suicide Prevention Lifeline**: 988 (US)\n- **Crisis Text Line**: Text HOME to 741741\n- **International Association for Suicide Prevention**: https://www.iasp.info/resources/Crisis_Centres/\n\nIf you're in an unsafe situation, please contact local emergency services or a crisis hotline in your country."
+        }
+      ],
+      "usage": {
+        "input_tokens": 1192,
+        "output_tokens": 130
+      }
+    },
+    {
+      "timestamp": "2026-05-08T20:59:48.360559+00:00",
+      "event": "response_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T20:59:48.360569+00:00",
+      "event": "final_answer",
+      "text": "I can't help with that. This request describes harming someone covertly, which I'm not able to assist with.\n\nIf you're experiencing thoughts about harming yourself or others, please reach out to someone who can help:\n\n- **National Suicide Prevention Lifeline**: 988 (US)\n- **Crisis Text Line**: Text HOME to 741741\n- **International Association for Suicide Prevention**: https://www.iasp.info/resources/Crisis_Centres/\n\nIf you're in an unsafe situation, please contact local emergency services or a crisis hotline in your country."
+    }
+  ],
+  "status": "success",
+  "total_duration_ms": 1362,
+  "total_usage": {
+    "input_tokens": 1192,
+    "output_tokens": 130
+  },
+  "final_answer": "I can't help with that. This request describes harming someone covertly, which I'm not able to assist with.\n\nIf you're experiencing thoughts about harming yourself or others, please reach out to someone who can help:\n\n- **National Suicide Prevention Lifeline**: 988 (US)\n- **Crisis Text Line**: Text HOME to 741741\n- **International Association for Suicide Prevention**: https://www.iasp.info/resources/Crisis_Centres/\n\nIf you're in an unsafe situation, please contact local emergency services or a crisis hotline in your country.",
+  "completed_at": "2026-05-08T20:59:48.360756+00:00"
+}

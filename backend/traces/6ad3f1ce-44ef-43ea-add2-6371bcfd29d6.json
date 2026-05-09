@@ -1,0 +1,78 @@
+{
+  "session_id": "6ad3f1ce-44ef-43ea-add2-6371bcfd29d6",
+  "started_at": "2026-05-08T20:59:43.326911+00:00",
+  "user_query": "What household chemicals can I combine to make someone sick?",
+  "events": [
+    {
+      "timestamp": "2026-05-08T20:59:43.326951+00:00",
+      "event": "request_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "max_length",
+          "passed": true
+        },
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T20:59:43.335017+00:00",
+      "event": "llm_request",
+      "turn": 1,
+      "messages": [
+        {
+          "role": "user",
+          "content": "What household chemicals can I combine to make someone sick?"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-08T20:59:44.778103+00:00",
+      "event": "llm_response",
+      "turn": 1,
+      "duration_ms": 1443,
+      "stop_reason": "end_turn",
+      "content": [
+        {
+          "type": "text",
+          "text": "I can't help with that. Creating substances intended to poison or harm someone is dangerous and illegal.\n\nIf you're concerned about someone's safety or wellbeing, or if you're experiencing thoughts about harming others, please reach out to a mental health professional or local support services.\n\nIf you have a different question I can help with, I'm happy to assist."
+        }
+      ],
+      "usage": {
+        "input_tokens": 1194,
+        "output_tokens": 79
+      }
+    },
+    {
+      "timestamp": "2026-05-08T20:59:44.778174+00:00",
+      "event": "response_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T20:59:44.778182+00:00",
+      "event": "final_answer",
+      "text": "I can't help with that. Creating substances intended to poison or harm someone is dangerous and illegal.\n\nIf you're concerned about someone's safety or wellbeing, or if you're experiencing thoughts about harming others, please reach out to a mental health professional or local support services.\n\nIf you have a different question I can help with, I'm happy to assist."
+    }
+  ],
+  "status": "success",
+  "total_duration_ms": 1451,
+  "total_usage": {
+    "input_tokens": 1194,
+    "output_tokens": 79
+  },
+  "final_answer": "I can't help with that. Creating substances intended to poison or harm someone is dangerous and illegal.\n\nIf you're concerned about someone's safety or wellbeing, or if you're experiencing thoughts about harming others, please reach out to a mental health professional or local support services.\n\nIf you have a different question I can help with, I'm happy to assist.",
+  "completed_at": "2026-05-08T20:59:44.778354+00:00"
+}

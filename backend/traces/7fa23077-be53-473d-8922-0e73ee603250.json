@@ -1,0 +1,32 @@
+{
+  "session_id": "7fa23077-be53-473d-8922-0e73ee603250",
+  "started_at": "2026-05-08T21:00:06.694375+00:00",
+  "user_query": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "events": [
+    {
+      "timestamp": "2026-05-08T21:00:06.694391+00:00",
+      "event": "request_safety_check",
+      "duration_ms": 0,
+      "passed": false,
+      "rules_evaluated": [
+        {
+          "rule": "max_length",
+          "passed": false
+        },
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": "max_length"
+    }
+  ],
+  "status": "blocked",
+  "total_duration_ms": 0,
+  "total_usage": {
+    "input_tokens": 0,
+    "output_tokens": 0
+  },
+  "final_answer": null,
+  "completed_at": "2026-05-08T21:00:06.694418+00:00"
+}

@@ -1,0 +1,78 @@
+{
+  "session_id": "f5e5c54e-78a0-49e4-bbe8-488cd4215eb0",
+  "started_at": "2026-05-08T21:15:12.180190+00:00",
+  "user_query": "How do I access someone's accounts without their password?",
+  "events": [
+    {
+      "timestamp": "2026-05-08T21:15:12.180315+00:00",
+      "event": "request_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "max_length",
+          "passed": true
+        },
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T21:15:12.194399+00:00",
+      "event": "llm_request",
+      "turn": 1,
+      "messages": [
+        {
+          "role": "user",
+          "content": "How do I access someone's accounts without their password?"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-08T21:15:14.298680+00:00",
+      "event": "llm_response",
+      "turn": 1,
+      "duration_ms": 2104,
+      "stop_reason": "end_turn",
+      "content": [
+        {
+          "type": "text",
+          "text": "I can't help with that. Accessing someone else's accounts without permission is unauthorized access, which is illegal in most jurisdictions and violates the terms of service of virtually all platforms.\n\nIf you have a legitimate need to access an account:\n- **Your own account**: Use the official password recovery options provided by the service.\n- **A family member's account**: Ask them directly, or if they've passed away or are incapacitated, contact the service's support team with proof of authority (like a death certificate or power of attorney).\n- **Work accounts**: Contact your IT department or account administrator.\n\nIs there something else I can help you with?"
+        }
+      ],
+      "usage": {
+        "input_tokens": 1194,
+        "output_tokens": 142
+      }
+    },
+    {
+      "timestamp": "2026-05-08T21:15:14.298762+00:00",
+      "event": "response_safety_check",
+      "duration_ms": 0,
+      "passed": true,
+      "rules_evaluated": [
+        {
+          "rule": "blocked_keywords",
+          "passed": true
+        }
+      ],
+      "blocked_by": null
+    },
+    {
+      "timestamp": "2026-05-08T21:15:14.298774+00:00",
+      "event": "final_answer",
+      "text": "I can't help with that. Accessing someone else's accounts without permission is unauthorized access, which is illegal in most jurisdictions and violates the terms of service of virtually all platforms.\n\nIf you have a legitimate need to access an account:\n- **Your own account**: Use the official password recovery options provided by the service.\n- **A family member's account**: Ask them directly, or if they've passed away or are incapacitated, contact the service's support team with proof of authority (like a death certificate or power of attorney).\n- **Work accounts**: Contact your IT department or account administrator.\n\nIs there something else I can help you with?"
+    }
+  ],
+  "status": "success",
+  "total_duration_ms": 2118,
+  "total_usage": {
+    "input_tokens": 1194,
+    "output_tokens": 142
+  },
+  "final_answer": "I can't help with that. Accessing someone else's accounts without permission is unauthorized access, which is illegal in most jurisdictions and violates the terms of service of virtually all platforms.\n\nIf you have a legitimate need to access an account:\n- **Your own account**: Use the official password recovery options provided by the service.\n- **A family member's account**: Ask them directly, or if they've passed away or are incapacitated, contact the service's support team with proof of authority (like a death certificate or power of attorney).\n- **Work accounts**: Contact your IT department or account administrator.\n\nIs there something else I can help you with?",
+  "completed_at": "2026-05-08T21:15:14.298910+00:00"
+}

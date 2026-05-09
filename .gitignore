@@ -1,6 +1,17 @@
 .env
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 backend/traces/*.json
+!backend/traces/f5e5c54e-78a0-49e4-bbe8-488cd4215eb0.json
+!backend/traces/7fa23077-be53-473d-8922-0e73ee603250.json
+!backend/traces/ba2c2a1c-599c-42a4-ad50-23ba1f1979a3.json
+!backend/traces/9e84e666-c4fa-493f-bf47-9dc570bb6819.json
+!backend/traces/d3e022ca-9e85-4742-b2e0-b63a52aae34f.json
+!backend/traces/6655b2cc-fc4d-4615-8776-f54e6da7eca3.json
+!backend/traces/2f915f09-665a-4fc8-944a-bf349a3703fc.json
+!backend/traces/ef38ee78-a563-40ec-b7f5-a52ee1ec056a.json
+!backend/traces/6ad3f1ce-44ef-43ea-add2-6371bcfd29d6.json
+!backend/traces/27c79aba-88f0-42f0-bd7e-265d2b709ae5.json
 .DS_Store
